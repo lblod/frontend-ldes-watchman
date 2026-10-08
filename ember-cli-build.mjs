@@ -8,6 +8,9 @@ export default async function (defaults) {
   const { buildOnce } = await import('@embroider/vite');
 
   const app = new EmberApp(defaults, {
+    sassOptions: {
+      includePaths: ['node_modules/@appuniversum/ember-appuniversum'], // just "node_modules" would also work, but it seems to slow (re)builds down a lot
+    },
     // Add options here
   });
 
