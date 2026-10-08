@@ -1,12 +1,29 @@
 import { pageTitle } from 'ember-page-title';
-import { WelcomePage } from 'ember-welcome-page';
+import AuApp from '@appuniversum/ember-appuniversum/components/au-app';
+import AuMainHeader from '@appuniversum/ember-appuniversum/components/au-main-header';
+import AuMainContainer from '@appuniversum/ember-appuniversum/components/au-main-container';
+import AuBodyContainer from '@appuniversum/ember-appuniversum/components/au-body-container';
+import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
 
 <template>
-  {{pageTitle "FrontendLdesWatchman"}}
+  {{pageTitle "LDES Watchman"}}
 
-  {{outlet}}
-
-  {{! The following component displays Ember's default welcome message. }}
-  <WelcomePage @extension="gts" />
-  {{! Feel free to remove this! }}
+  <AuApp>
+    <AuMainHeader @homeRoute="statistics" @appTitle="LDES Watchman">
+      <li class="au-c-list-horizontal__item">
+        <AuLink @route="statistics">Statistics</AuLink>
+      </li>
+    </AuMainHeader>
+    <AuMainContainer as |main|>
+      <main.content>
+        <AuBodyContainer @scroll={{true}}>
+          <div
+            class="au-d-component-block au-d-component-block--overflow au-u-padding"
+          >
+            {{outlet}}
+          </div>
+        </AuBodyContainer>
+      </main.content>
+    </AuMainContainer>
+  </AuApp>
 </template>

@@ -84,6 +84,10 @@ export default defineConfig([
       },
     },
     extends: [...ts.configs.recommendedTypeChecked, ember.configs.gts],
+    rules: {
+      // fetching statistics from the ldes-watchman API: no warp-drive model involved
+      'warp-drive/no-external-request-patterns': 'off',
+    },
   },
   {
     ...qunit.configs.recommended,
