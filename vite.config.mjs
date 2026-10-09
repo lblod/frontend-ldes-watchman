@@ -15,9 +15,26 @@ const LOCAL_PATHS = [
   /^\/vendor\//,
   /^\/component-library/,
 ];
+
+const fixAppuniversumAssets = () => ({
+  name: 'fix-appuniversum-asset-path',
+  configureServer(server) {
+    server.middlewares.use((req, _res, next) => {
+      if (req.url?.startsWith('/@embroider/@appuniversum/')) {
+        req.url = req.url.replace(
+          '/@embroider/@appuniversum/',
+          '/@appuniversum/',
+        );
+      }
+      next();
+    });
+  },
+});
+
 export default defineConfig({
   plugins: [
     classicEmberSupport(),
+    fixAppuniversumAssets(),
     ember(),
     // extra plugins here
     babel({
