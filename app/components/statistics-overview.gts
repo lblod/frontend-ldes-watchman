@@ -5,6 +5,7 @@ import AuCard from '@appuniversum/ember-appuniversum/components/au-card';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import StatCard from './stat-card.gts';
 import EchartsChart from './echarts-chart.gts';
+import ShapeChangeCard from './shape-change-card.gts';
 
 type OverviewSignature = {
   Args: {
@@ -136,6 +137,12 @@ export default class Overview extends Component<OverviewSignature> {
             </p>
           </card.content>
         </AuCard>
+      </div>
+    {{/if}}
+
+    {{#if @model.shapeDiff}}
+      <div class="stats-grid au-u-margin-bottom">
+        <ShapeChangeCard @diff={{@model.shapeDiff}} />
       </div>
     {{/if}}
 

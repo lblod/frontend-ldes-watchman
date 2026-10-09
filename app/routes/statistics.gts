@@ -1,6 +1,7 @@
 import Route from '@ember/routing/route';
 import config from 'frontend-ldes-watchman/config/environment';
 import type {
+  ShapeDiff,
   Statistics,
   StatisticsModel,
   TimeDistribution,
@@ -33,6 +34,19 @@ async function fetchStatistics(
   return (await response.json()) as Statistics;
 }
 
+async function fetchShapeDiff(streamUri: string): Promise<ShapeDiff | null> {
+  const url = new URL(
+    `${document.location.protocol}//${document.location.host}/ldes-watchman-api/shape/diff`,
+  );
+  url.searchParams.set('streamUri', streamUri);
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    return null;
+  }
+  return (await response.json()) as ShapeDiff;
+}
+
 export default class StatisticsRoute extends Route {
   async model(): Promise<StatisticsModel> {
     const { streamUri } = config.statistics as StatisticsConfig;
@@ -57,7 +71,7 @@ export default class StatisticsRoute extends Route {
       return (await response.json()) as TimeDistribution;
     }
 
-    const [total, lastDay] = await Promise.all([
+    const [total, lastDay, shapeDiff] = await Promise.all([
       fetchStatistics({ streamUri }),
       fetchStatistics(
         { streamUri },
@@ -66,12 +80,14 @@ export default class StatisticsRoute extends Route {
           to: now.toISOString(),
         },
       ),
+      fetchShapeDiff(streamUri),
     ]);
 
     return {
       total,
       lastDay,
       lastMonth: await fetchTimeDistribution(lastMonth, now),
+      shapeDiff,
     };
   }
 }
