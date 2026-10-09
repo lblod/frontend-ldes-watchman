@@ -9,7 +9,10 @@ export type Statistics = {
   averageProcessingDuration: number;
 };
 
+export type TimeDistribution = { bucket: string; count: number }[];
+
 export type StatisticsModel = {
   total: Statistics;
   lastDay: Statistics;
+  lastMonth?: TimeDistribution;
 };

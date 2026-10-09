@@ -12,6 +12,36 @@ type OverviewSignature = {
   };
 };
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const MS_PER_HOUR = 60 * 60 * 1000;
+
+/**
+ * Fill in missing buckets between the first and last bucket with count 0.
+ * Hourly buckets ("YYYY-MM-DDTHH") are spaced by an hour,
+ * daily buckets ("YYYY-MM-DD") by a day.
+ */
+function fillGaps(buckets: { bucket: string; count: number }[]) {
+  if (buckets.length < 2) {
+    return buckets;
+  }
+  const counts = new Map(buckets.map((b) => [b.bucket, b.count]));
+  const hourly = buckets[0]!.bucket.length > 10;
+  const step = hourly ? MS_PER_HOUR : MS_PER_DAY;
+
+  const toMs = (bucket: string) =>
+    Date.parse(hourly ? `${bucket}:00Z` : `${bucket}T00:00Z`);
+
+  let time = toMs(buckets[0]!.bucket);
+  const result: { bucket: string; count: number }[] = [];
+  const end = toMs(buckets[buckets.length - 1]!.bucket);
+  while (time <= end) {
+    const bucket = new Date(time).toISOString().slice(0, hourly ? 13 : 10);
+    result.push({ bucket, count: counts.get(bucket) ?? 0 });
+    time += step;
+  }
+  return result;
+}
+
 export default class Overview extends Component<OverviewSignature> {
   get hasTimeDistribution(): boolean {
     return (this.args.model.lastDay.timeDistribution?.length ?? 0) > 0;
@@ -21,14 +51,42 @@ export default class Overview extends Component<OverviewSignature> {
     return this.args.model.total.typeDistribution.length > 0;
   }
 
+  get hasMonthTimeDistribution(): boolean {
+    return (this.args.model.lastMonth?.length ?? 0) > 0;
+  }
+
   get timeChartOptions(): EChartsOption {
-    const distribution = this.args.model.lastDay.timeDistribution ?? [];
+    const distribution = fillGaps(
+      this.args.model.lastDay.timeDistribution ?? [],
+    );
     return {
       tooltip: { trigger: 'axis' },
       grid: { top: 30, left: 40, right: 20, bottom: 60 },
       xAxis: {
         type: 'category',
         name: 'hour',
+        data: distribution.map((d) => d.bucket),
+        axisLabel: { rotate: 45 },
+      },
+      yAxis: { type: 'value', name: 'instances' },
+      series: [
+        {
+          name: 'Instances',
+          type: 'bar',
+          data: distribution.map((d) => d.count),
+        },
+      ],
+    };
+  }
+
+  get monthChartOptions(): EChartsOption {
+    const distribution = fillGaps(this.args.model.lastMonth ?? []);
+    return {
+      tooltip: { trigger: 'axis' },
+      grid: { top: 30, left: 40, right: 20, bottom: 60 },
+      xAxis: {
+        type: 'category',
+        name: 'day',
         data: distribution.map((d) => d.bucket),
         axisLabel: { rotate: 45 },
       },
@@ -114,13 +172,29 @@ export default class Overview extends Component<OverviewSignature> {
 
     {{#if this.hasTimeDistribution}}
       <div class="stats-grid au-u-margin-bottom">
-
-        <AuCard class="au-u-margin-bottom" as |card|>
+        <AuCard @shadow={{true}} class="au-u-margin-bottom" as |card|>
           <card.header>
-            <AuHeading @level="5" @skin="5">foo</AuHeading>
+            <AuHeading @level="5" @skin="5">
+              Instances per hour (last 24 hours)
+            </AuHeading>
           </card.header>
           <card.content>
             <EchartsChart @option={{this.timeChartOptions}} />
+          </card.content>
+        </AuCard>
+      </div>
+    {{/if}}
+
+    {{#if this.hasMonthTimeDistribution}}
+      <div class="stats-grid au-u-margin-bottom">
+        <AuCard @shadow={{true}} class="au-u-margin-bottom" as |card|>
+          <card.header>
+            <AuHeading @level="5" @skin="5">
+              Instances per day (last 30 days)
+            </AuHeading>
+          </card.header>
+          <card.content>
+            <EchartsChart @option={{this.monthChartOptions}} />
           </card.content>
         </AuCard>
       </div>
