@@ -1,7 +1,9 @@
+> [!Warning]
+> This frontend is under development
+
 # frontend-ldes-watchman
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+This is a frontend for an LDES watchman application. It shows statistics for the LDES feed and shows a diff of the most recent format change of the feed (types and their predicates)
 
 ## Prerequisites
 
