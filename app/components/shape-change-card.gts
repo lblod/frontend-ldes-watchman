@@ -7,6 +7,7 @@ import AuModal from '@appuniversum/ember-appuniversum/components/au-modal';
 import AuCard from '@appuniversum/ember-appuniversum/components/au-card';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import type { ShapeDiff } from 'frontend-ldes-watchman/types/statistics';
+import FromNow from '../helpers/from-now.gts';
 
 type ShapeChangeCardSignature = {
   Element: HTMLDivElement;
@@ -188,7 +189,7 @@ export default class ShapeChangeCard extends Component<ShapeChangeCardSignature>
         </AuHeading>
       </card.header>
       <card.content>
-        <p class="au-u-muted">{{@diff.timestampNew}}</p>
+        <p class="au-u-muted">{{FromNow @diff.timestampNew}}</p>
         <AuButton {{on "click" this.toggleDiff}}>
           Show diff
         </AuButton>

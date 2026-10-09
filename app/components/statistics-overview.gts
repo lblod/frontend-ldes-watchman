@@ -6,9 +6,7 @@ import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import StatCard from './stat-card.gts';
 import EchartsChart from './echarts-chart.gts';
 import ShapeChangeCard from './shape-change-card.gts';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-dayjs.extend(relativeTime);
+import FromNow from '../helpers/from-now.gts';
 
 type OverviewSignature = {
   Args: {
@@ -105,10 +103,6 @@ export default class Overview extends Component<OverviewSignature> {
     };
   }
 
-  get lastProcessedText(): string {
-    return `${this.args.model.total.lastProcessedPage?.time}, ${dayjs(this.args.model.total.lastProcessedPage?.time).fromNow()}`;
-  }
-
   get typeChartOptions(): EChartsOption {
     const distribution = this.args.model.total.typeDistribution;
     return {
@@ -140,7 +134,7 @@ export default class Overview extends Component<OverviewSignature> {
           <card.content>
             <p>{{@model.total.lastProcessedPage.page}}</p>
             <p class="au-u-muted">
-              {{this.lastProcessedText}}
+              {{FromNow @model.total.lastProcessedPage.time}}
             </p>
           </card.content>
         </AuCard>
