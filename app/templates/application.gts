@@ -3,10 +3,12 @@ import AuApp from '@appuniversum/ember-appuniversum/components/au-app';
 import AuMainHeader from '@appuniversum/ember-appuniversum/components/au-main-header';
 import AuMainContainer from '@appuniversum/ember-appuniversum/components/au-main-container';
 import AuBodyContainer from '@appuniversum/ember-appuniversum/components/au-body-container';
+import AuModalContainer from '@appuniversum/ember-appuniversum/components/au-modal-container';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
 
 <template>
   {{pageTitle "LDES Watchman"}}
+  <AuModalContainer />
 
   <AuApp>
     <AuMainHeader @homeRoute="statistics" @appTitle="LDES Watchman">

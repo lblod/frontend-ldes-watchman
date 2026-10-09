@@ -3,7 +3,7 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--au-spacing-4);
+  gap: 10px;
 }
 
 .stat-card__value {
@@ -19,7 +19,6 @@
 .shape-diff {
   font-family: monospace;
   font-size: 0.8em;
-  max-height: 30em;
   overflow: auto;
 }
 

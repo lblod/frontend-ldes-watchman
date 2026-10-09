@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { on } from '@ember/modifier';
 import { diffLines } from 'diff';
 import AuButton from '@appuniversum/ember-appuniversum/components/au-button';
+import AuModal from '@appuniversum/ember-appuniversum/components/au-modal';
 import AuCard from '@appuniversum/ember-appuniversum/components/au-card';
 import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import type { ShapeDiff } from 'frontend-ldes-watchman/types/statistics';
@@ -189,19 +190,27 @@ export default class ShapeChangeCard extends Component<ShapeChangeCardSignature>
       <card.content>
         <p class="au-u-muted">{{@diff.timestampNew}}</p>
         <AuButton {{on "click" this.toggleDiff}}>
-          {{if this.showDiff "Hide diff" "Show diff"}}
+          Show diff
         </AuButton>
-        {{#if this.showDiff}}
-          <div class="shape-diff au-u-margin-top">
-            {{#each this.renderedLines as |renderedLine|}}
-              <div
-                class="shape-diff__line {{renderedLine.className}}"
-                role="button"
-                {{on "click" renderedLine.toggle}}
-              >{{renderedLine.text}}</div>
-            {{/each}}
-          </div>
-        {{/if}}
+        <AuModal
+          @modalOpen={{this.showDiff}}
+          @closable={{true}}
+          @closeModal={{this.toggleDiff}}
+          @size="large"
+        >
+          <:title>Last format change</:title>
+          <:body>
+            <div class="shape-diff au-u-height-full au-u-padding">
+              {{#each this.renderedLines as |renderedLine|}}
+                <div
+                  class="shape-diff__line {{renderedLine.className}}"
+                  role="button"
+                  {{on "click" renderedLine.toggle}}
+                >{{renderedLine.text}}</div>
+              {{/each}}
+            </div>
+          </:body>
+        </AuModal>
       </card.content>
     </AuCard>
   </template>
