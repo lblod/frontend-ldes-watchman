@@ -119,10 +119,6 @@ export default class Overview extends Component<OverviewSignature> {
   }
 
   <template>
-    <AuHeading @level="1" @skin="2" class="au-u-margin-bottom">
-      Statistics
-    </AuHeading>
-
     {{#if @model.total.lastProcessedPage}}
       <div class="stats-grid au-u-margin-bottom">
         <AuCard @shadow={{true}} as |card|>

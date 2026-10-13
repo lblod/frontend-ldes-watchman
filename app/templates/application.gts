@@ -5,11 +5,11 @@ import AuMainContainer from '@appuniversum/ember-appuniversum/components/au-main
 import AuBodyContainer from '@appuniversum/ember-appuniversum/components/au-body-container';
 import AuModalContainer from '@appuniversum/ember-appuniversum/components/au-modal-container';
 import AuLink from '@appuniversum/ember-appuniversum/components/au-link';
-
+import BasicDropdownWormhole from 'ember-basic-dropdown/components/basic-dropdown-wormhole';
 <template>
   {{pageTitle "LDES Watchman"}}
   <AuModalContainer />
-
+  <BasicDropdownWormhole />
   <AuApp>
     <AuMainHeader @homeRoute="statistics" @appTitle="LDES Watchman">
       <li class="au-c-list-horizontal__item">

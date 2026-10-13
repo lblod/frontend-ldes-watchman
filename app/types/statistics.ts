@@ -34,4 +34,5 @@ export type StatisticsModel = {
   lastDay: Statistics;
   lastMonth?: TimeDistribution;
   shapeDiff?: ShapeDiff | null;
+  availableStreams: string[];
 };

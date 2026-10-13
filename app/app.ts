@@ -6,11 +6,17 @@ import loadInitializers from 'ember-load-initializers';
 import config from 'frontend-ldes-watchman/config/environment';
 import { importSync, isDevelopingApp, macroCondition } from '@embroider/macros';
 import setupInspector from '@embroider/legacy-inspector-support/ember-source-4.12';
+import { setConfig } from 'ember-basic-dropdown/config';
 
 if (macroCondition(isDevelopingApp())) {
   importSync('./deprecation-workflow');
 }
 
+// Basic usage:
+setConfig({
+  // @ts-expect-error setup for ember-basic-dropdown
+  rootElement: config.APP.rootElement,
+});
 export default class App extends Application {
   modulePrefix = config.modulePrefix;
   podModulePrefix = config.podModulePrefix;

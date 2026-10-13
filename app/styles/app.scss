@@ -1,3 +1,6 @@
+@use "ember-basic-dropdown";
+@use "ember-power-select";
+
 @import "@appuniversum/ember-appuniversum/styles";
 
 .stats-grid {
@@ -42,4 +45,8 @@
 .shape-diff__line--removed {
   color: #b30000;
   background-color: #fdeaea;
+}
+
+.ember-power-select-status-icon {
+  border-style: none;
 }

@@ -1,5 +1,4 @@
 import Route from '@ember/routing/route';
-import config from 'frontend-ldes-watchman/config/environment';
 import type {
   ShapeDiff,
   Statistics,
@@ -7,15 +6,23 @@ import type {
   TimeDistribution,
 } from 'frontend-ldes-watchman/types/statistics';
 
-type StatisticsConfig = {
-  streamUri: string;
-};
-
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MS_PER_MONTH = 30 * MS_PER_DAY;
 
+async function fetchStreams(): Promise<string[]> {
+  const url = new URL(
+    `${document.location.protocol}//${document.location.host}/ldes-watchman-api/streams`,
+  );
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch streams: ${response.status}`);
+  }
+  return (await response.json()) as string[];
+}
+
 async function fetchStatistics(
-  { streamUri }: StatisticsConfig,
+  streamUri: string,
   params?: { from: string; to: string },
 ): Promise<Statistics> {
   const url = new URL(
@@ -47,9 +54,23 @@ async function fetchShapeDiff(streamUri: string): Promise<ShapeDiff | null> {
   return (await response.json()) as ShapeDiff;
 }
 
+type StatisticsParams = {
+  streamUri: string;
+};
+
 export default class StatisticsRoute extends Route {
-  async model(): Promise<StatisticsModel> {
-    const { streamUri } = config.statistics as StatisticsConfig;
+  queryParams = {
+    streamUri: {
+      refreshModel: true,
+    },
+  };
+
+  async model(params: StatisticsParams): Promise<StatisticsModel> {
+    let streamUri = params.streamUri;
+    const availableStreams = await fetchStreams();
+    if (!streamUri) {
+      streamUri = availableStreams[0] as string;
+    }
     const now = new Date();
     const yesterday = new Date(now.getTime() - MS_PER_DAY);
     const lastMonth = new Date(now.getTime() - MS_PER_MONTH);
@@ -72,14 +93,11 @@ export default class StatisticsRoute extends Route {
     }
 
     const [total, lastDay, shapeDiff] = await Promise.all([
-      fetchStatistics({ streamUri }),
-      fetchStatistics(
-        { streamUri },
-        {
-          from: yesterday.toISOString(),
-          to: now.toISOString(),
-        },
-      ),
+      fetchStatistics(streamUri),
+      fetchStatistics(streamUri, {
+        from: yesterday.toISOString(),
+        to: now.toISOString(),
+      }),
       fetchShapeDiff(streamUri),
     ]);
 
@@ -88,6 +106,7 @@ export default class StatisticsRoute extends Route {
       lastDay,
       lastMonth: await fetchTimeDistribution(lastMonth, now),
       shapeDiff,
+      availableStreams,
     };
   }
 }
