@@ -30,6 +30,7 @@ export type ShapeDiff = {
 };
 
 export type StatisticsModel = {
+  streamUri: string;
   total: Statistics;
   lastDay: Statistics;
   lastMonth?: TimeDistribution;

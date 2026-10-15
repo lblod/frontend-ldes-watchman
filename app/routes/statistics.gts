@@ -1,10 +1,10 @@
 import Route from '@ember/routing/route';
 import type {
   ShapeDiff,
-  Statistics,
   StatisticsModel,
   TimeDistribution,
 } from 'frontend-ldes-watchman/types/statistics';
+import { fetchStatistics } from 'frontend-ldes-watchman/utils/statistics-api';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MS_PER_MONTH = 30 * MS_PER_DAY;
@@ -19,26 +19,6 @@ async function fetchStreams(): Promise<string[]> {
     throw new Error(`Failed to fetch streams: ${response.status}`);
   }
   return (await response.json()) as string[];
-}
-
-async function fetchStatistics(
-  streamUri: string,
-  params?: { from: string; to: string },
-): Promise<Statistics> {
-  const url = new URL(
-    `${document.location.protocol}//${document.location.host}/ldes-watchman-api/statistics`,
-  );
-  url.searchParams.set('streamUri', streamUri);
-  if (params) {
-    url.searchParams.set('from', params.from);
-    url.searchParams.set('to', params.to);
-  }
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch statistics: ${response.status}`);
-  }
-  return (await response.json()) as Statistics;
 }
 
 async function fetchShapeDiff(streamUri: string): Promise<ShapeDiff | null> {
@@ -102,6 +82,7 @@ export default class StatisticsRoute extends Route {
     ]);
 
     return {
+      streamUri,
       total,
       lastDay,
       lastMonth: await fetchTimeDistribution(lastMonth, now),

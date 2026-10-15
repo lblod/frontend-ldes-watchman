@@ -6,6 +6,7 @@ import AuHeading from '@appuniversum/ember-appuniversum/components/au-heading';
 import StatCard from './stat-card.gts';
 import EchartsChart from './echarts-chart.gts';
 import ShapeChangeCard from './shape-change-card.gts';
+import DailyStatistics from './daily-statistics.gts';
 import FromNow from '../helpers/from-now.gts';
 
 type OverviewSignature = {
@@ -45,40 +46,12 @@ function fillGaps(buckets: { bucket: string; count: number }[]) {
 }
 
 export default class Overview extends Component<OverviewSignature> {
-  get hasTimeDistribution(): boolean {
-    return (this.args.model.lastDay.timeDistribution?.length ?? 0) > 0;
-  }
-
   get hasTypeDistribution(): boolean {
     return this.args.model.total.typeDistribution.length > 0;
   }
 
   get hasMonthTimeDistribution(): boolean {
     return (this.args.model.lastMonth?.length ?? 0) > 0;
-  }
-
-  get timeChartOptions(): EChartsOption {
-    const distribution = fillGaps(
-      this.args.model.lastDay.timeDistribution ?? [],
-    );
-    return {
-      tooltip: { trigger: 'axis' },
-      grid: { top: 30, left: 40, right: 20, bottom: 60 },
-      xAxis: {
-        type: 'category',
-        name: 'hour',
-        data: distribution.map((d) => d.bucket),
-        axisLabel: { rotate: 45 },
-      },
-      yAxis: { type: 'value', name: 'instances' },
-      series: [
-        {
-          name: 'Instances',
-          type: 'bar',
-          data: distribution.map((d) => d.count),
-        },
-      ],
-    };
   }
 
   get monthChartOptions(): EChartsOption {
@@ -141,51 +114,7 @@ export default class Overview extends Component<OverviewSignature> {
       </div>
     {{/if}}
 
-    <AuHeading @level="2" @skin="3" class="au-u-margin-bottom-small">
-      Last 24 hours
-    </AuHeading>
-    <div class="stats-grid au-u-margin-bottom">
-      <StatCard
-        @title="Instances"
-        @value={{@model.lastDay.instanceCount}}
-        @description="LDES members processed"
-      />
-      <StatCard
-        @title="Pages"
-        @value={{@model.lastDay.pagesProcessed}}
-        @description="Pages processed"
-      />
-      <StatCard
-        @title="Errors"
-        @value={{@model.lastDay.errorCount}}
-        @description="Errors recorded"
-      />
-      <StatCard
-        @title="Avg. load"
-        @value={{@model.lastDay.averageLoadDuration}}
-        @description="ms per page"
-      />
-      <StatCard
-        @title="Avg. processing"
-        @value={{@model.lastDay.averageProcessingDuration}}
-        @description="ms per page"
-      />
-    </div>
-
-    {{#if this.hasTimeDistribution}}
-      <div class="stats-grid au-u-margin-bottom">
-        <AuCard @shadow={{true}} class="au-u-margin-bottom" as |card|>
-          <card.header>
-            <AuHeading @level="5" @skin="5">
-              Instances per hour (last 24 hours)
-            </AuHeading>
-          </card.header>
-          <card.content>
-            <EchartsChart @option={{this.timeChartOptions}} />
-          </card.content>
-        </AuCard>
-      </div>
-    {{/if}}
+    <DailyStatistics @model={{@model}} />
 
     {{#if this.hasMonthTimeDistribution}}
       <div class="stats-grid au-u-margin-bottom">
