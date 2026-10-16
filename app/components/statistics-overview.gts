@@ -7,6 +7,7 @@ import StatCard from './stat-card.gts';
 import EchartsChart from './echarts-chart.gts';
 import ShapeChangeCard from './shape-change-card.gts';
 import DailyStatistics from './daily-statistics.gts';
+import SparqlErrorsCard from './sparql-errors-card.gts';
 import FromNow from '../helpers/from-now.gts';
 
 type OverviewSignature = {
@@ -115,6 +116,12 @@ export default class Overview extends Component<OverviewSignature> {
     {{/if}}
 
     <DailyStatistics @model={{@model}} />
+
+    {{#if @model.errors.length}}
+      <div class="stats-grid au-u-margin-bottom">
+        <SparqlErrorsCard @errors={{@model.errors}} />
+      </div>
+    {{/if}}
 
     {{#if this.hasMonthTimeDistribution}}
       <div class="stats-grid au-u-margin-bottom">

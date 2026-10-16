@@ -29,11 +29,18 @@ export type ShapeDiff = {
   newShape: StreamShape;
 };
 
+export type SparqlError = {
+  name: string;
+  time: string;
+  result?: string;
+};
+
 export type StatisticsModel = {
   streamUri: string;
   total: Statistics;
   lastDay: Statistics;
   lastMonth?: TimeDistribution;
   shapeDiff?: ShapeDiff | null;
+  errors: SparqlError[];
   availableStreams: string[];
 };

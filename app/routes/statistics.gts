@@ -4,7 +4,10 @@ import type {
   StatisticsModel,
   TimeDistribution,
 } from 'frontend-ldes-watchman/types/statistics';
-import { fetchStatistics } from 'frontend-ldes-watchman/utils/statistics-api';
+import {
+  fetchSparqlErrors,
+  fetchStatistics,
+} from 'frontend-ldes-watchman/utils/statistics-api';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const MS_PER_MONTH = 30 * MS_PER_DAY;
@@ -72,13 +75,17 @@ export default class StatisticsRoute extends Route {
       return (await response.json()) as TimeDistribution;
     }
 
-    const [total, lastDay, shapeDiff] = await Promise.all([
+    const [total, lastDay, shapeDiff, errors] = await Promise.all([
       fetchStatistics(streamUri),
       fetchStatistics(streamUri, {
         from: yesterday.toISOString(),
         to: now.toISOString(),
       }),
       fetchShapeDiff(streamUri),
+      fetchSparqlErrors(streamUri, {
+        from: lastMonth.toISOString(),
+        to: now.toISOString(),
+      }),
     ]);
 
     return {
@@ -87,6 +94,7 @@ export default class StatisticsRoute extends Route {
       lastDay,
       lastMonth: await fetchTimeDistribution(lastMonth, now),
       shapeDiff,
+      errors,
       availableStreams,
     };
   }
