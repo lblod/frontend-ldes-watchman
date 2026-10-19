@@ -62,7 +62,8 @@ function dateTimeFormat(date: Date): string {
 
 export default class DailyStatistics extends Component<DailyStatisticsSignature> {
   @tracked period: { from: Date; to: Date };
-  @tracked stats: Statistics;
+  @tracked override: { model: StatisticsModel; stats: Statistics } | null =
+    null;
   @tracked loading = false;
   @tracked manualFrom: string;
   @tracked manualTo: string;
@@ -71,9 +72,14 @@ export default class DailyStatistics extends Component<DailyStatisticsSignature>
     super(owner, args);
     const now = new Date();
     this.period = { from: new Date(now.getTime() - MS_PER_DAY), to: now };
-    this.stats = args.model.lastDay;
     this.manualFrom = toDateTimeLocalValue(this.period.from);
     this.manualTo = toDateTimeLocalValue(this.period.to);
+  }
+
+  get stats(): Statistics {
+    return this.override && this.override.model === this.args.model
+      ? this.override.stats
+      : this.args.model.lastDay;
   }
 
   get now(): Date {
@@ -136,10 +142,13 @@ export default class DailyStatistics extends Component<DailyStatisticsSignature>
   async refreshStats() {
     this.loading = true;
     try {
-      this.stats = await fetchStatistics(this.args.model.streamUri, {
-        from: this.period.from.toISOString(),
-        to: this.period.to.toISOString(),
-      });
+      this.override = {
+        model: this.args.model,
+        stats: await fetchStatistics(this.args.model.streamUri, {
+          from: this.period.from.toISOString(),
+          to: this.period.to.toISOString(),
+        }),
+      };
     } finally {
       this.loading = false;
     }
