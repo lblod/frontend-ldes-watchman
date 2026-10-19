@@ -5,6 +5,7 @@ export type Statistics = {
   pagesProcessed: number;
   errorCount: number;
   lastProcessedPage: { page: string; time: string } | null;
+  lastMemberSeen: string | null;
   averageLoadDuration: number;
   averageProcessingDuration: number;
 };

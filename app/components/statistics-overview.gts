@@ -104,8 +104,15 @@ export default class Overview extends Component<OverviewSignature> {
           <card.content>
             <p>{{@model.total.lastProcessedPage.page}}</p>
             <p class="au-u-muted">
+              Last page processed:
               {{FromNow @model.total.lastProcessedPage.time}}
             </p>
+            {{#if @model.total.lastMemberSeen}}
+              <p class="au-u-muted au-u-margin-top-none">
+                Last member seen:
+                {{FromNow @model.total.lastMemberSeen}}
+              </p>
+            {{/if}}
           </card.content>
         </AuCard>
         {{#if @model.shapeDiff}}
